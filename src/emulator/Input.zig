@@ -25,9 +25,11 @@ pub const Action = union(enum) {
 
 const Self = @This();
 
+reset: KeyState = .{},
 speed_up: KeyState = .{},
 speed_down: KeyState = .{},
-reset: KeyState = .{},
+volume_up: KeyState = .{},
+volume_down: KeyState = .{},
 
 pub fn init() Self {
     return .{};
@@ -46,10 +48,10 @@ pub fn check(self: *Self, window: *glfw.Window) Action {
     if (self.speed_down.isJustPressed(window, .comma)) {
         return .SpeedDown;
     }
-    if (self.speed_down.isJustPressed(window, .right_bracket)) {
+    if (self.volume_up.isJustPressed(window, .right_bracket)) {
         return .VolumeUp;
     }
-    if (self.speed_down.isJustPressed(window, .left_bracket)) {
+    if (self.volume_down.isJustPressed(window, .left_bracket)) {
         return .VolumeDown;
     }
     return .None;

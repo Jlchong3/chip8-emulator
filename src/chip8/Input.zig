@@ -47,16 +47,9 @@ pub fn isKeyPressed(self: Self, key: u4) bool {
 
 pub fn getAnyReleasedKey(self: Self) ?u4 {
     for (self.keys, self.prev_keys, 0..) |current, previous, i| {
-        if (!current and previous) { // Was pressed, now released
+        if (!current and previous) {
             return @intCast(i);
         }
-    }
-    return null;
-}
-
-pub fn getAnyPressedKey(self: Self) ?u4 {
-    for (self.keys, 0..) |pressed, i| {
-        if (pressed) return @intCast(i);
     }
     return null;
 }

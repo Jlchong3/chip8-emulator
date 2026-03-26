@@ -1,5 +1,3 @@
-const glfw = @import("zglfw");
-
 const Self = @This();
 
 keys: [16]bool,
@@ -12,33 +10,16 @@ pub fn init() Self {
     };
 }
 
-pub fn update(self: *Self, window: *glfw.Window) void {
-    if (window.getAttribute(.focused) == false) {
-        @memset(&self.keys, false);
-        return;
-    }
-
+pub fn tick(self: *Self) void {
     self.prev_keys = self.keys;
+}
 
-    self.keys[0x1] = window.getKey(.one) == .press;
-    self.keys[0x2] = window.getKey(.two) == .press;
-    self.keys[0x3] = window.getKey(.three) == .press;
-    self.keys[0xC] = window.getKey(.four) == .press;
+pub fn pressKey(self: *Self, key: u4) void {
+    self.keys[key] = true;
+}
 
-    self.keys[0x4] = window.getKey(.q) == .press;
-    self.keys[0x5] = window.getKey(.w) == .press;
-    self.keys[0x6] = window.getKey(.e) == .press;
-    self.keys[0xD] = window.getKey(.r) == .press;
-
-    self.keys[0x7] = window.getKey(.a) == .press;
-    self.keys[0x8] = window.getKey(.s) == .press;
-    self.keys[0x9] = window.getKey(.d) == .press;
-    self.keys[0xE] = window.getKey(.f) == .press;
-
-    self.keys[0xA] = window.getKey(.z) == .press;
-    self.keys[0x0] = window.getKey(.x) == .press;
-    self.keys[0xB] = window.getKey(.c) == .press;
-    self.keys[0xF] = window.getKey(.v) == .press;
+pub fn releaseKey(self: *Self, key: u4) void {
+    self.keys[key] = false;
 }
 
 pub fn isKeyPressed(self: Self, key: u4) bool {

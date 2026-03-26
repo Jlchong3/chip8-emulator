@@ -67,7 +67,7 @@ pub fn run(self: *Self) void {
         self.audio.setBeep(self.chip8.sound_timer > 0);
 
         self.handleSystemInput();
-        self.chip8_input.update(self.window);
+        self.updateChip8Input();
 
         for (0..cycles_per_frame) |_| {
             self.chip8.cycle(&self.chip8_input);
@@ -109,6 +109,37 @@ pub fn destroy(self: *Self, allocator: mem.Allocator) void {
     glfw.terminate();
 
     allocator.destroy(self);
+}
+
+fn updateChip8Input(self: *Self) void {
+    const keys_mappings = [_]struct { chip8: u4, glfw: glfw.Key } {
+        .{ .chip8 = 0x1, .glfw = glfw.Key.one },
+        .{ .chip8 = 0x2, .glfw = glfw.Key.two },
+        .{ .chip8 = 0x3, .glfw = glfw.Key.three },
+        .{ .chip8 = 0xC, .glfw = glfw.Key.four },
+        .{ .chip8 = 0x4, .glfw = glfw.Key.q },
+        .{ .chip8 = 0x5, .glfw = glfw.Key.w },
+        .{ .chip8 = 0x6, .glfw = glfw.Key.e },
+        .{ .chip8 = 0xD, .glfw = glfw.Key.r },
+        .{ .chip8 = 0x7, .glfw = glfw.Key.a },
+        .{ .chip8 = 0x8, .glfw = glfw.Key.s },
+        .{ .chip8 = 0x9, .glfw = glfw.Key.d },
+        .{ .chip8 = 0xE, .glfw = glfw.Key.f },
+        .{ .chip8 = 0xA, .glfw = glfw.Key.z },
+        .{ .chip8 = 0x0, .glfw = glfw.Key.x },
+        .{ .chip8 = 0xB, .glfw = glfw.Key.c },
+        .{ .chip8 = 0xF, .glfw = glfw.Key.v },
+    };
+
+    self.chip8_input.tick();
+
+    for (keys_mappings) |key_map| {
+        if (self.window.getKey(key_map.glfw) == .press) {
+            self.chip8_input.pressKey(key_map.chip8);
+        } else {
+            self.chip8_input.releaseKey(key_map.chip8);
+        }
+    }
 }
 
 fn handleSystemInput(self: *Self) void {

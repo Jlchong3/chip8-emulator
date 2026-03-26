@@ -1,15 +1,16 @@
 const std = @import("std");
 const mem = std.mem;
-const Input = @import("Input.zig");
+pub const Input = @import("Input.zig");
 
 pub const fb_width = 64;
 pub const fb_height = 32;
 
 const sprite_start = 0x50;
-const rom_start = 0x200;
+pub const rom_start = 0x200;
+pub const memory_size = 4096;
 const Self = @This();
 
-memory: [4096]u8,
+memory: [memory_size]u8,
 V: [16]u8,
 I: u16,
 frame_buffer: [fb_width * fb_height]u8,
@@ -44,7 +45,7 @@ const Opcode = struct {
 };
 
 pub fn init() Self {
-    var memory = [_]u8{0} ** 4096;
+    var memory = [_]u8{0} ** memory_size;
     loadSprites(&memory);
 
     return .{
@@ -72,23 +73,12 @@ pub fn reset(self: *Self) void {
     self.SP = 0;
 }
 
-pub fn loadRom(self: *Self, path: []const u8) !void {
-    const file = try std.fs.cwd().openFile(path, .{});
-    defer file.close();
+pub fn loadRom(self: *Self, rom_data: []const u8) !void {
+    if (rom_data.len == 0) return error.EmptyRom;
+    if (rom_data.len > self.memory[rom_start..].len) return error.ROMTooLarg;
 
-    const file_size = (try file.stat()).size;
-
-    if (file_size == 0) return error.EmptyROM;
-    if (file_size > self.memory[rom_start..].len) return error.ROMTooLarge;
-
-    var buf = [_]u8{0} ** 256;
-    var reader = file.reader(&buf);
-    reader.interface.readSliceAll(self.memory[rom_start..]) catch |err| switch (err) {
-        error.EndOfStream => {},
-        else => return err,
-    };
-
-    std.log.debug("ROM loaded successfully!", .{});
+    const dest = self.memory[rom_start..][0..rom_data.len];
+    @memcpy(dest, rom_data);
 }
 
 pub fn decrementTimers(self: *Self) void {

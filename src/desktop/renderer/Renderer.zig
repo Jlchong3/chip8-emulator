@@ -1,5 +1,5 @@
 const std = @import("std");
-const Chip8 = @import("../chip8/Chip8.zig");
+const Chip8 = @import("Chip8");
 const zopengl = @import("zopengl");
 const glfw = @import("zglfw");
 const mem = std.mem;

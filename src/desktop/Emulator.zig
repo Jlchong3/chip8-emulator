@@ -1,11 +1,13 @@
 const std = @import("std");
 const mem = std.mem;
+
+const Chip8 = @import("Chip8");
+const Chip8Input = Chip8.Input;
 const glfw = @import("zglfw");
-const Renderer = @import("../renderer/Renderer.zig");
-const Chip8 = @import("../chip8/Chip8.zig");
-const Chip8Input = @import("../chip8/Input.zig");
-const EmulatorInput = @import("Input.zig");
+
 const Audio = @import("Audio.zig");
+const EmulatorInput = @import("Input.zig");
+const Renderer = @import("renderer/Renderer.zig");
 
 const Self = @This();
 
@@ -49,8 +51,19 @@ pub fn create(allocator: mem.Allocator, width: u32, height: u32) !*Self {
 }
 
 pub fn loadRom(self: *Self, path: []const u8) !void {
-    try self.chip8.loadRom(path);
+    const file = try std.fs.cwd().openFile(path, .{});
+    defer file.close();
+
+    var buf = [_]u8{0} ** 256;
+    var reader = file.reader(&buf);
+
+    var rom_buffer: [Chip8.memory_size - Chip8.rom_start]u8 = undefined;
+    const bytes_read = try reader.interface.readSliceShort(&rom_buffer);
+
+    try self.chip8.loadRom(rom_buffer[0..bytes_read]);
     self.rom_path = path;
+
+    std.log.debug("ROM loaded successfully!", .{});
 }
 
 pub fn run(self: *Self) void {

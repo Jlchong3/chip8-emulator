@@ -1,5 +1,5 @@
 const std = @import("std");
-const Emulator = @import("emulator/Emulator.zig");
+const Emulator = @import("Emulator.zig");
 
 pub fn main() !void {
     const allocator = std.heap.smp_allocator;

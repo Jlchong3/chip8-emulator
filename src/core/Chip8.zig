@@ -21,6 +21,7 @@ sound_timer: u8,
 PC: u16,
 stack: [16]u16,
 SP: u8,
+prng: std.Random.DefaultPrng,
 
 const Opcode = struct {
     opcode: u16,
@@ -66,6 +67,7 @@ pub fn init() Self {
         .PC = rom_start,
         .stack = [_]u16{0} ** 16,
         .SP = 0,
+        .prng = std.Random.DefaultPrng.init(0),
     };
 }
 
@@ -180,7 +182,7 @@ fn decodeAndExecute(self: *Self, instruction: Opcode, input: *const Input) void 
 
         0xB => self.PC = instruction.nnn() + self.V[0],
 
-        0xC => self.V[instruction.x()] = std.crypto.random.int(u8) & instruction.kk(),
+        0xC => self.V[instruction.x()] = self.prng.random().int(u8) & instruction.kk(),
 
         0xD => {
             const start_x = self.V[instruction.x()];

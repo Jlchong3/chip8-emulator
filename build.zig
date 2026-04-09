@@ -66,7 +66,13 @@ pub fn build(b: *std.Build) void {
             .root_source_file = b.path("src/web/wasm.zig"),
             .target = wasm_target,
             .optimize = optimize,
-        })
+            .imports = &.{
+                .{ .name = "Chip8", .module = b.addModule(
+                    "Chip8",
+                    .{ .root_source_file = b.path("src/core/Chip8.zig") },
+                )},
+            },
+        }),
     });
 
     wasm_exe.entry = .disabled;

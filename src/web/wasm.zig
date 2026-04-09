@@ -42,7 +42,7 @@ export fn press_key(key: u8) void {
 }
 
 export fn release_key(key: u8) void {
-    input.pressKey(@truncate(key));
+    input.releaseKey(@truncate(key));
 }
 
 export fn cycle() void {

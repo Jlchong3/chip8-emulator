@@ -1,6 +1,6 @@
 const std = @import("std");
-const Chip8 = @import("../core/Chip8.zig");
-const Input = @import("../core/Input.zig");
+const Chip8 = @import("Chip8");
+const Input = Chip8.Input;
 
 extern "env" fn consoleLog(ptr: [*]const u8, len: usize) void;
 

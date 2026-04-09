@@ -1,5 +1,7 @@
 const std = @import("std");
+const builtin = @import("builtin");
 const mem = std.mem;
+
 pub const Input = @import("Input.zig");
 
 pub const fb_width = 64;
@@ -43,6 +45,12 @@ const Opcode = struct {
         return @truncate(self.opcode & 0x00FF);
     }
 };
+
+fn printLog(comptime format: []const u8, args: anytype) void {
+    if (builtin.os.tag != .freestanding) {
+        std.debug.print(format, args);
+    }
+}
 
 pub fn init() Self {
     var memory = [_]u8{0} ** memory_size;
@@ -101,7 +109,7 @@ fn decodeAndExecute(self: *Self, instruction: Opcode, input: *const Input) void 
                 },
                 0x00EE => self.PC = self.pop(),
                 else => {
-                    std.debug.print("Unknown Opcode: {X:0>4}\n", .{instruction.opcode});
+                    printLog("Unknown Opcode: {X:0>4}\n", .{instruction.opcode});
                 },
             }
         },
@@ -247,7 +255,7 @@ fn decodeAndExecute(self: *Self, instruction: Opcode, input: *const Input) void 
                     }
                 },
                 else => {
-                    std.debug.print("Unknown Opcode: {X:0>4}\n", .{instruction.opcode});
+                    printLog("Unknown Opcode: {X:0>4}\n", .{instruction.opcode});
                 },
             }
         },
